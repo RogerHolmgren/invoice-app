@@ -1,6 +1,7 @@
 (ns core
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.reload :refer [wrap-reload]]
             [hiccup.page :refer [html5]]
             [hiccup.form :as form])
   (:gen-class))
@@ -13,6 +14,7 @@
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
     [:title title]
     [:script {:src "https://unpkg.com/htmx.org@1.9.10"}]
+    [:script {:src "https://livejs.com/live.js"}]
     [:style "
        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
        button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 5px; }
@@ -43,7 +45,7 @@
 
      ;; Example 2: HTMX form with live updates
            [:div
-            [:h3 "2. Interactive Form (Updates)"]
+            [:h3 "2. Interactive Form (Live Updates)"]
             (form/form-to [:post "/greet"]
                           [:input {:type "text"
                                    :name "name"
@@ -165,7 +167,8 @@
 ;; Application
 (def app
   (-> handler
-      wrap-params))
+      wrap-params
+      (wrap-reload {:dirs ["src"]})))
 
 ;; Main
 (defn -main [& args]
