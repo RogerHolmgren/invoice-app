@@ -3,7 +3,9 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.reload :refer [wrap-reload]]
             [hiccup.page :refer [html5]]
-            [hiccup.form :as form])
+            [hiccup.form :as form]
+            [simpleclick :as my-click]
+            [counter :as my-counter])
   (:gen-class))
 
 ;; HTML Components using Hiccup
@@ -25,23 +27,17 @@
        h3 { margin-top: 40px; border-bottom: 2px solid #333; padding-bottom: 10px; }
      "]]
    [:body
-    [:h1 "🚀 Clojure + HTMX + Hiccup"]
+    [:h1 "Faktura App"]
     content]))
 
 (defn home-page []
-  (layout "HTMX + Hiccup Demo"
+  (layout "Faktura Program"
           [:div
            [:h2 "Hello, World!"]
            [:p "This is a minimal Clojure application using HTMX and Hiccup."]
 
      ;; Example 1: Simple HTMX button
-           [:div
-            [:h3 "1. Simple Click"]
-            [:button {:hx-get "/hello"
-                      :hx-target "#hello-result"
-                      :hx-swap "innerHTML"}
-             "Click Me!"]
-            [:div#hello-result.message "Click the button above..."]]
+           (my-click/simple-click-part)
 
      ;; Example 2: HTMX form with live updates
            [:div
@@ -58,21 +54,7 @@
             [:div#greet-result.message "Type your name to see live updates..."]]
 
      ;; Example 3: Counter
-           [:div
-            [:h3 "3. Counter"]
-            [:div#counter.message "Count: 0"]
-            [:button {:hx-get "/increment"
-                      :hx-target "#counter"
-                      :hx-swap "innerHTML"}
-             "➕ Increment"]
-            [:button {:hx-get "/decrement"
-                      :hx-target "#counter"
-                      :hx-swap "innerHTML"}
-             "➖ Decrement"]
-            [:button {:hx-get "/reset"
-                      :hx-target "#counter"
-                      :hx-swap "innerHTML"}
-             "🔄 Reset"]]
+           (my-counter/counter-part)
 
      ;; Example 4: Dynamic content
            [:div
@@ -84,10 +66,6 @@
             [:div#dynamic-content.message "Click to load dynamic content..."]]]))
 
 ;; HTMX Handlers
-(defn hello-handler [_]
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body (str [:div.message.success "Hello from HTMX! 👋"])})
 
 (defn greet-handler [request]
   (let [name (get-in request [:params "name"] "")]
@@ -96,28 +74,7 @@
      :body (if (empty? name)
              (str [:div.message.info "Type your name..."])
              (str [:div.message.success
-                   (str "Hello, " name "! 🎉")]))}))
-
-;; Counter state
-(def counter (atom 0))
-
-(defn increment-handler [_]
-  (swap! counter inc)
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body (str [:div.message.info (str "Count: " @counter)])})
-
-(defn decrement-handler [_]
-  (swap! counter dec)
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body (str [:div.message.info (str "Count: " @counter)])})
-
-(defn reset-handler [_]
-  (reset! counter 0)
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body (str [:div.message.info "Count: 0"])})
+                   (str "Hello, " name "!")]))}))
 
 (defn content-handler [_]
   {:status 200
@@ -142,19 +99,22 @@
        :body (home-page)}
 
       (and (= uri "/hello") (= method :get))
-      (hello-handler request)
+      (my-click/hello-handler request)
 
       (and (= uri "/greet") (= method :post))
       (greet-handler request)
 
       (and (= uri "/increment") (= method :get))
-      (increment-handler request)
+      (my-counter/increment-handler request)
 
       (and (= uri "/decrement") (= method :get))
-      (decrement-handler request)
+      (my-counter/decrement-handler request)
 
       (and (= uri "/reset") (= method :get))
-      (reset-handler request)
+      (my-counter/reset-handler request)
+
+      (and (= uri "/remove") (= method :get))
+      (my-counter/my-remove request)
 
       (and (= uri "/content") (= method :get))
       (content-handler request)
