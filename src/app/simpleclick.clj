@@ -1,4 +1,4 @@
-(ns simpleclick)
+(ns app.simpleclick)
 
 (defn simple-click-part []
   [:div

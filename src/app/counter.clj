@@ -1,4 +1,4 @@
-(ns counter
+(ns app.counter
   (:require [hiccup.page :refer [html5]])
   (:gen-class))
 
@@ -49,3 +49,6 @@
   {:status 200
    :headers {"Content-Type" "text/html"}
    :body ""})
+
+(comment
+  (reset! counter 0))

@@ -1,11 +1,11 @@
-(ns core
+(ns app.core
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.reload :refer [wrap-reload]]
-            [hiccup.page :refer [html5]]
+            [hiccup.page :refer [html5 include-css]]
             [hiccup.form :as form]
-            [simpleclick :as my-click]
-            [counter :as my-counter])
+            [app.simpleclick :as my-click]
+            [app.counter :as my-counter])
   (:gen-class))
 
 ;; HTML Components using Hiccup
@@ -17,15 +17,7 @@
     [:title title]
     [:script {:src "https://unpkg.com/htmx.org@1.9.10"}]
     [:script {:src "https://livejs.com/live.js"}]
-    [:style "
-       body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
-       button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 5px; }
-       input { padding: 10px; font-size: 16px; margin-right: 10px; width: 300px; }
-       .message { padding: 20px; background: #f0f0f0; border-radius: 5px; margin: 20px 0; }
-       .success { background: #d4edda; color: #155724; }
-       .info { background: #d1ecf1; color: #0c5460; }
-       h3 { margin-top: 40px; border-bottom: 2px solid #333; padding-bottom: 10px; }
-     "]]
+    (include-css "/css/style.css")]
    [:body
     [:h1 "Faktura App"]
     content]))
@@ -127,7 +119,7 @@
 ;; Application
 (def app
   (-> handler
-      wrap-params
+      (wrap-params)
       (wrap-reload {:dirs ["src"]})))
 
 ;; Main
@@ -138,5 +130,4 @@
 ;; REPL helpers
 (comment
   (def server (-main))
-  (.stop server)
-  (reset! counter 0))
+  (.stop server))
