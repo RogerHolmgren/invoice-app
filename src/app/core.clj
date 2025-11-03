@@ -2,6 +2,8 @@
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.reload :refer [wrap-reload]]
+            [ring.middleware.resource :refer [wrap-resource]]
+            [ring.middleware.content-type :refer [wrap-content-type]]
             [hiccup.page :refer [html5 include-css]]
             [hiccup.form :as form]
             [app.simpleclick :as my-click]
@@ -120,6 +122,8 @@
 (def app
   (-> handler
       (wrap-params)
+      (wrap-resource "public") ; "imports" resource folder to be able to include-css
+      (wrap-content-type)
       (wrap-reload {:dirs ["src"]})))
 
 ;; Main
