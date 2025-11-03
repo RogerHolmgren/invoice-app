@@ -17,11 +17,7 @@
    [:button {:hx-get "/reset"
              :hx-target "#counter"
              :hx-swap "innerHTML"}
-    "🔄 Reset"]
-   [:button {:hx-get "/remove"
-             :hx-target "#cou"
-             :hx-swap "innerHTML"}
-    "🔄 Remove"]])
+    "🔄 Reset"]])
 
 ;; HTMX Handlers
 ;; Counter state
@@ -44,11 +40,6 @@
   {:status 200
    :headers {"Content-Type" "text/html"}
    :body "Count: 0"})
-
-(defn my-remove [_]
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body ""})
 
 (comment
   (reset! counter 0))

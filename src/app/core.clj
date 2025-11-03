@@ -5,9 +5,10 @@
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [hiccup.page :refer [html5 include-css]]
-            [hiccup.form :as form]
             [app.simpleclick :as my-click]
-            [app.counter :as my-counter])
+            [app.counter :as my-counter]
+            [app.dynamic :as my-dynamic]
+            [app.form :as my-form])
   (:gen-class))
 
 ;; HTML Components using Hiccup
@@ -30,57 +31,10 @@
            [:h2 "Hello, World!"]
            [:p "This is a minimal Clojure application using HTMX and Hiccup."]
 
-     ;; Example 1: Simple HTMX button
            (my-click/simple-click-part)
-
-     ;; Example 2: HTMX form with live updates
-           [:div
-            [:h3 "2. Interactive Form (Live Updates)"]
-            (form/form-to [:post "/greet"]
-                          [:input {:type "text"
-                                   :name "name"
-                                   :placeholder "Enter your name"
-                                   :hx-post "/greet"
-                                   :hx-target "#greet-result"
-                                   :hx-swap "innerHTML"
-                                   :hx-trigger "keyup changed delay:500ms"}]
-                          [:button {:type "submit"} "Greet"])
-            [:div#greet-result.message "Type your name to see live updates..."]]
-
-     ;; Example 3: Counter
+           (my-form/form-part)
            (my-counter/counter-part)
-
-     ;; Example 4: Dynamic content
-           [:div
-            [:h3 "4. Load Dynamic Content"]
-            [:button {:hx-get "/content"
-                      :hx-target "#dynamic-content"
-                      :hx-swap "innerHTML"}
-             "📦 Load Content"]
-            [:div#dynamic-content.message "Click to load dynamic content..."]]]))
-
-;; HTMX Handlers
-
-(defn greet-handler [request]
-  (let [name (get-in request [:params "name"] "")]
-    {:status 200
-     :headers {"Content-Type" "text/html"}
-     :body (if (empty? name)
-             (str [:div.message.info "Type your name..."])
-             (str [:div.message.success
-                   (str "Hello, " name "!")]))}))
-
-(defn content-handler [_]
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body (str [:div.message.success
-               [:h4 "✨ Dynamic Content Loaded!"]
-               [:p "This content was loaded via HTMX at " (str (java.time.LocalDateTime/now))]
-               [:ul
-                [:li "Server-side rendering with Hiccup"]
-                [:li "Client-side updates with HTMX"]
-                [:li "No JavaScript frameworks needed!"]
-                [:li "Simple, fast, and elegant"]]])})
+           (my-dynamic/dynamic-part)]))
 
 ;; Router
 (defn handler [request]
@@ -96,7 +50,7 @@
       (my-click/hello-handler request)
 
       (and (= uri "/greet") (= method :post))
-      (greet-handler request)
+      (my-form/greet-handler request)
 
       (and (= uri "/increment") (= method :get))
       (my-counter/increment-handler request)
@@ -108,10 +62,13 @@
       (my-counter/reset-handler request)
 
       (and (= uri "/remove") (= method :get))
-      (my-counter/my-remove request)
+      (my-click/my-remove request)
+
+      (and (= uri "/add") (= method :get))
+      (my-click/my-add request)
 
       (and (= uri "/content") (= method :get))
-      (content-handler request)
+      (my-dynamic/content-handler request)
 
       :else
       {:status 404
