@@ -4,7 +4,7 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.content-type :refer [wrap-content-type]]
-            [hiccup.page :refer [html5 include-css]]
+            [app.home :as home]
             [app.simpleclick :as my-click]
             [app.counter :as my-counter]
             [app.dynamic :as my-dynamic]
@@ -12,29 +12,6 @@
   (:gen-class))
 
 ;; HTML Components using Hiccup
-(defn layout [title & content]
-  (html5
-   [:head
-    [:meta {:charset "UTF-8"}]
-    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
-    [:title title]
-    [:script {:src "https://unpkg.com/htmx.org@1.9.10"}]
-    [:script {:src "https://livejs.com/live.js"}]
-    (include-css "/css/style.css")]
-   [:body
-    [:h1 "Faktura App"]
-    content]))
-
-(defn home-page []
-  (layout "Faktura Program"
-          [:div
-           [:h2 "Hello, World!"]
-           [:p "This is a minimal Clojure application using HTMX and Hiccup."]
-
-           (my-click/simple-click-part)
-           (my-form/form-part)
-           (my-counter/counter-part)
-           (my-dynamic/dynamic-part)]))
 
 ;; Router
 (defn handler [request]
@@ -44,10 +21,7 @@
       (and (= uri "/") (= method :get))
       {:status 200
        :headers {"Content-Type" "text/html"}
-       :body (home-page)}
-
-      (and (= uri "/hello") (= method :get))
-      (my-click/hello-handler request)
+       :body (home/home-page)}
 
       (and (= uri "/greet") (= method :post))
       (my-form/greet-handler request)
@@ -73,7 +47,7 @@
       :else
       {:status 404
        :headers {"Content-Type" "text/html"}
-       :body (layout "404" [:h2 "Page Not Found"])})))
+       :body (home/layout "404" [:h2 "Page Not Found"])})))
 
 ;; Application
 (def app

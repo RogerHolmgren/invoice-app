@@ -3,27 +3,16 @@
    [hiccup.page :refer [html5]]
    [app.counter :as my-counter]))
 
-(defn simple-click-part []
-  [:div
-   [:h3 "1. Simple Click"]
-   [:button {:hx-get "/hello"
-             :hx-target "#hello-result"
-             :hx-swap "innerHTML"}
-    "Click Me!"]
-   [:div#hello-result.message "Click the button above..."]
-   [:button {:hx-get "/add"
-             :hx-target "#cou"
-             :hx-swap "innerHTML"}
-    "Add"]
-   [:button {:hx-get "/remove"
-             :hx-target "#cou"
-             :hx-swap "innerHTML"}
-    "Remove"]])
+(defn menu-button [text page]
+  [:button {:hx-get (str "/" page)
+            :hx-target "#hello-result"
+            :hx-swap "innerHTML"}
+   text])
 
-(defn hello-handler [_]
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body "Hello from HTMX!"})
+(defn main-menu []
+  [:div
+   (menu-button "Kunder" "customers")
+   (menu-button "Faktura" "invoice")])
 
 (defn my-remove [_]
   {:status 200
