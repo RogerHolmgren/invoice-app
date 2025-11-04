@@ -1,9 +1,5 @@
 (ns app.home
   (:require
-   [app.simpleclick :as my-click]
-   [app.counter :as my-counter]
-   [app.dynamic :as my-dynamic]
-   [app.form :as my-form]
    [hiccup.page :refer [html5 include-css]]))
 
 (defn layout [title & content]
@@ -19,10 +15,23 @@
     [:h1 "Faktura Program"]
     content]))
 
+(defn menu-button [text page]
+  [:button {:hx-get (str "/" page)
+            :hx-target "#main-page"
+            :hx-swap "innerHTML"}
+   text])
+
+(defn main-menu []
+  [:div
+   (menu-button "Ny Faktura" "new-invoice")
+   (menu-button "Fakturor" "invoices")
+   (menu-button "Ny Kund" "new-customer")
+   (menu-button "Kunder" "customers")])
+
 (defn home-page []
   (layout "Faktura Program"
           [:div
-           (my-click/main-menu)
+           (main-menu)
            [:div#main-page]
 
            ; (my-form/form-part)

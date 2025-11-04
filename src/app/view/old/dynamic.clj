@@ -1,4 +1,4 @@
-(ns app.dynamic
+(ns app.view.old.dynamic
   (:require
    [hiccup.page :refer [html5]]
    [hiccup.form :as form]

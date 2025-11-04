@@ -5,13 +5,11 @@
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [app.home :as home]
-            [app.simpleclick :as my-click]
-            [app.counter :as my-counter]
-            [app.dynamic :as my-dynamic]
-            [app.form :as my-form])
+            [app.view.new-invoice :refer [new-invoice]]
+            [app.view.invoices :refer [invoices]]
+            [app.view.new-customer :refer [new-customer]]
+            [app.view.customers :refer [customers]])
   (:gen-class))
-
-;; HTML Components using Hiccup
 
 ;; Router
 (defn handler [request]
@@ -23,26 +21,17 @@
        :headers {"Content-Type" "text/html"}
        :body (home/home-page)}
 
-      (and (= uri "/greet") (= method :post))
-      (my-form/greet-handler request)
+      (and (= uri "/new-invoice") (= method :get))
+      (new-invoice request)
 
-      (and (= uri "/increment") (= method :get))
-      (my-counter/increment-handler request)
+      (and (= uri "/invoices") (= method :get))
+      (invoices request)
 
-      (and (= uri "/decrement") (= method :get))
-      (my-counter/decrement-handler request)
+      (and (= uri "/new-customer") (= method :get))
+      (new-customer request)
 
-      (and (= uri "/reset") (= method :get))
-      (my-counter/reset-handler request)
-
-      (and (= uri "/remove") (= method :get))
-      (my-click/my-remove request)
-
-      (and (= uri "/add") (= method :get))
-      (my-click/my-add request)
-
-      (and (= uri "/content") (= method :get))
-      (my-dynamic/content-handler request)
+      (and (= uri "/customers") (= method :get))
+      (customers request)
 
       :else
       {:status 404

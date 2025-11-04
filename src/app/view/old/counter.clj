@@ -1,4 +1,4 @@
-(ns app.counter
+(ns app.view.old.counter
   (:require [hiccup.page :refer [html5]])
   (:gen-class))
 
